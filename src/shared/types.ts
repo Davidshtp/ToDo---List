@@ -1,0 +1,13 @@
+export interface IManState extends IMainInternal {
+  
+  set_state: (title : keyof IMainInternal , value : any ) => void;
+}
+
+export interface IMainInternal{
+    tasks : TTask[]
+}
+
+export type  TTask = {
+    title: string
+    duation: number
+}
