@@ -9,5 +9,5 @@ export interface IMainInternal{
 
 export type  TTask = {
     title: string
-    duation: number
+    duration: number
 }
