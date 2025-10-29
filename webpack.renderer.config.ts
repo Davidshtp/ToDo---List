@@ -8,7 +8,7 @@ rules.push({
   use: [{ loader: 'style-loader' }, { loader: 'css-loader' }, { loader: 'postcss-loader' }],
 });
 rules.push({
-  test: /\.(wav|mp3|)$/i,
+  test: /\.(wav|mp3)$/i,
   use: [
     {
       loader: 'file-loader',
