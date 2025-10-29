@@ -8,3 +8,8 @@ export const friendlyTime = (duration: number) => {
     }
 
 }
+
+export const broadcast_event = (event_name:string, data:any) => {
+    const ev = new CustomEvent(event_name, {detail: data})
+    window.dispatchEvent(ev)
+}

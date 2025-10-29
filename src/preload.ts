@@ -7,9 +7,12 @@ ipcRenderer.on('tasks-data', (ev, data) => {
 })
 
 const renderer = {
-    // open_child_win: (data: Trask) => {
-    // ipcRenderer.send('open-child-win', data)
-    // }
+    open_child_win: (data: TTrask) => {
+     ipcRenderer.send('open-child-win', data)
+    },
+    close_app: () => {
+        ipcRenderer.send('close-app')
+    }
 }
 
 contextBridge.exposeInMainWorld('electron', renderer)

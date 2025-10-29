@@ -116,7 +116,7 @@ export default React.memo((props: any) => {
                     Taco
                 </div>
             </div>
-            <div className="border-r-[.5px] h-[100%] overflow-hidden justify-between border-stone-400 dark:border-stone-700">
+            <div className="border-r-[.5px] h-[100%] overflow-hidden justify-between overflow-auto border-stone-400 dark:border-stone-700">
                 <div className="flex overflow-auto relative h-[calc(100%-40px)] overflow-x-hidden flex-col space-y-4 text-xs p-2 divide-y-[.5px] divide-stone-800">
                     {
                         taskMemo.length == 0 ?
@@ -136,6 +136,9 @@ export default React.memo((props: any) => {
                             />                  
                         )
                     }
+                </div>
+                <div className="h-[40px]">
+                    <button disabled={taskMemo.length == 0} onClick={() => window.electron.open_child_win(tasks)}className="btn btn-soft w-[100%]">Start</button>
                 </div>
             </div>
             <div className="flex justify-center items-center">
