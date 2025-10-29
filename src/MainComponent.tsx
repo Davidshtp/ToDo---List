@@ -1,10 +1,10 @@
-import { ArrowDown, ArrowUp, BrushCleaning, Pen, Plus, X } from "lucide-react";
+import { BrushCleaning, Plus, X, Minus, Square } from "lucide-react";
 import React from "react";
 import { useMainState } from "./shared/zus-store";
 import { TaskList } from "./shared/SharedComponents";
 import { friendlyTime } from "./shared/functions";
 
-export default React.memo((props: any) => {
+export default React.memo(() => {
     const [hour, setHour] = React.useState<number>(0)
     const [min, setMin] = React.useState<number>(0)
     const [sec, setSec] = React.useState<number>(0)
@@ -26,10 +26,10 @@ export default React.memo((props: any) => {
             title,
             duration
         }
-        if(tasks.find(task => task.title.toLowerCase() === title.toLowerCase() && task.duration == duration) != undefined) return setError('You already set the task')
+        if (tasks.find(task => task.title.toLowerCase() === title.toLowerCase() && task.duration == duration) != undefined) return setError('You already set the task')
 
         console.log("task", task);
-        
+
         set_state('tasks', [...tasks, task])
         setHour(0)
         setMin(0)
@@ -47,7 +47,7 @@ export default React.memo((props: any) => {
         setTitle(task.title)
     }, [tasks])
 
-    const handleUpdateTask = React.useCallback((props: any) => {
+    const handleUpdateTask = React.useCallback(() => {
         const h = hour * (60 * 60 * 1000);
         const m = min * (60 * 1000);
         const s = sec * 1000;
@@ -106,52 +106,140 @@ export default React.memo((props: any) => {
         if (title == 'sec' && (parseInt(value) < 60 || value == '')) setSec(value === '' ? 0 : parseInt(value))
     }, [])
 
+
+
     return (
         <div className="h-[100vh] overflow-hidden grid grid-cols-[250px_1fr] grid-rows-[30px_1fr]">
-            <div className="header relative flex items-center justify-center col-span-full border-b-[.5px] border-stone-400 dark:border-stone-700">
-                <div onClick={() => window.electron.close_app()} className="absolute left-0 h-[100%] w-[30px] flex justify-center items-center">
-                    <X className="w-[20px] h-[20px]" />
-                </div>
+            <div
+                className="header relative flex items-center justify-center col-span-full border-b-[.5px] border-stone-400 dark:border-stone-700"
+                style={{ WebkitAppRegion: 'drag' } as any}
+            >
                 <div className='text-stone-800 flex items-center justify-center dark:text-stone-200'>
                     Taco
                 </div>
+                <div
+                    style={{
+                        position: 'absolute',
+                        right: 0,
+                        height: '100%',
+                        display: 'flex',
+                        WebkitAppRegion: 'no-drag'
+                    } as any}
+                >
+                    <div
+                        onClick={() => (window as any).electron?.minimize_app()}
+                        style={{
+                            height: '100%',
+                            width: '30px',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                            backgroundColor: 'transparent',
+                            border: 'none',
+                            transition: 'background-color 0.15s ease',
+                            WebkitAppRegion: 'no-drag'
+                        } as any}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'transparent'
+                        }}
+                    >
+                        <Minus style={{ width: '16px', height: '16px' }} />
+                    </div>
+                    <div
+                        onClick={() => (window as any).electron?.maximize_app()}
+                        style={{
+                            height: '100%',
+                            width: '30px',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                            backgroundColor: 'transparent',
+                            border: 'none',
+                            transition: 'background-color 0.15s ease',
+                            WebkitAppRegion: 'no-drag'
+                        } as any}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'transparent'
+                        }}
+                    >
+                        <Square style={{ width: '14px', height: '14px' }} />
+                    </div>
+                    <div
+                        onClick={() => (window as any).electron?.close_app()}
+                        style={{
+                            height: '100%',
+                            width: '30px',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                            backgroundColor: 'transparent',
+                            border: 'none',
+                            transition: 'all 0.15s ease',
+                            WebkitAppRegion: 'no-drag'
+                        } as any}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#e81123'
+                            e.currentTarget.style.color = 'white'
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'transparent'
+                            e.currentTarget.style.color = 'inherit'
+                        }}
+                    >
+                        <X style={{ width: '16px', height: '16px' }} />
+                    </div>
+                </div>
             </div>
-            <div className="border-r-[.5px] h-[100%] overflow-hidden justify-between overflow-auto border-stone-400 dark:border-stone-700">
+
+
+            <div className="border-r-[.5px] h-[100%] overflow-hidden justify-between border-stone-400 dark:border-stone-700">
                 <div className="flex overflow-auto relative h-[calc(100%-40px)] overflow-x-hidden flex-col space-y-4 text-xs p-2 divide-y-[.5px] divide-stone-800">
                     {
                         taskMemo.length == 0 ?
-                        <div className="w-[100%] absolute top-[calc(50%-10px)] flex justify-center items-center">
-                            <span className="font-italic text-stone-400 dark:text-stone-700">No tasks added yet</span>
-                        </div>:
-                        taskMemo.map((task, index) => 
-                            <TaskList 
-                                key={Math.floor(Math.random() * 9999999).toString()} 
-                                data={task} 
-                                index={index} 
-                                rmCb={handleRmTask}  
-                                editCb={handleEditTask}
-                                moveUpCb={handleMoveTaskUp}
-                                moveDwCb={handleMoveTaskDown}
-                                totalItems={taskMemo.length}
-                            />                  
-                        )
+                            <div className="w-[100%] absolute top-[calc(50%-10px)] flex justify-center items-center">
+                                <span className="font-italic text-stone-400 dark:text-stone-700">Aún no se han agregado tareas</span>
+                            </div> :
+                            taskMemo.map((task, index) =>
+                                <TaskList
+                                    key={Math.floor(Math.random() * 9999999).toString()}
+                                    data={task}
+                                    index={index}
+                                    rmCb={handleRmTask}
+                                    editCb={handleEditTask}
+                                    moveUpCb={handleMoveTaskUp}
+                                    moveDwCb={handleMoveTaskDown}
+                                    totalItems={taskMemo.length}
+                                />
+                            )
                     }
                 </div>
-                <div className="h-[40px]">
-                    <button disabled={taskMemo.length == 0} onClick={() => window.electron.open_child_win(tasks)}className="btn btn-soft w-[100%]">Start</button>
+                <div className="h-[40px] flex flex-row">
+                    <button disabled={taskMemo.length == 0} onClick={() => window.electron.open_child_win(tasks)} className="btn btn-soft flex-1">Comenzar</button>
+                    <button title="clear all" disabled={taskMemo.length == 0} onClick={() => { confirm("¿Estás seguro de que quieres borrar todas las tareas?") && set_state('tasks', []) }} className="btn btn-soft btn-secondary">
+                        <BrushCleaning className="w-[20px] h-[20px]" />
+                    </button>
                 </div>
             </div>
             <div className="flex justify-center items-center">
                 <div className="flex flex-col">
-                    <div className="text-xl font-bold mb-2 text-center">Add Task</div>
+                    <div className="text-xl font-bold mb-2 text-center">Agregar Tarea</div>
                     <div className="flex flex-col">
                         {/* <div className="text-sm opacity-70">Title</div> */}
                         <div>
-                            <input type="text" value={title} onChange={(e) => setTitle((e.currentTarget as HTMLInputElement).value)} placeholder="Task title" className="input text-center h-[30px] border-[0px] focus:border-[0px] bg-transparent border-b-[1px] rounded-[0px] focus:outline-[0px]" />
+                            <input type="text" value={title} onChange={(e) => setTitle((e.currentTarget as HTMLInputElement).value)} placeholder="Título de la tarea" className="input text-center h-[30px] border-[0px] focus:border-[0px] bg-transparent border-b-[1px] rounded-[0px] focus:outline-[0px]" />
                         </div>
                     </div>
                     <div className="flex flex-col mt-4">
-                        <div className="text-sm opacity-70 mb-2">Duration</div>
+                        <div className="text-sm opacity-70 mb-2">Duración</div>
                         <div className="flex space-x-4">
                             <input type="text" value={hour == 0 ? '' : hour} onChange={(e) => handleInputChange('hour', (e.currentTarget as HTMLInputElement).value)} placeholder="HH" className="input text-center w-[50px] bg-transparent rounded-[0px] focus:outline-[0px]" />
                             <input type="text" value={min == 0 ? '' : min} onChange={(e) => handleInputChange('min', (e.currentTarget as HTMLInputElement).value)} placeholder="MM" className="input text-center w-[50px] bg-transparent rounded-[0px] focus:outline-[0px]" />
@@ -161,7 +249,7 @@ export default React.memo((props: any) => {
                     </div>
                     <div>
                         <button onClick={currentTaskEdit > -1 ? handleUpdateTask : handleAddTask} disabled={error !== '' || (hour == 0 && min == 0 && sec == 0) || title == ''} className="btn btn-soft btn-primary w-[100%]">
-                            <Plus className="w-[20px] h-[20px]" /> {currentTaskEdit > -1 ? "Update" : "Add"} Task
+                            <Plus className="w-[20px] h-[20px]" /> {currentTaskEdit > -1 ? "Actualizar" : "Agregar"} Tarea
                         </button>
                     </div>
                 </div>
@@ -169,5 +257,3 @@ export default React.memo((props: any) => {
         </div>
     )
 })
-
-

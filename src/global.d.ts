@@ -1,8 +1,8 @@
-import { TChildRenderer } from "./child-proc/preload";
-import { TRenderer } from "./preload";
+import { TRenderer } from './preload'
+import { TChildRenderer } from './child-proc/preload'
 
 declare global {
-    interface Window {
-        electron: TRenderer & TChildRenderer
-    }
+  interface Window {
+    electron: TRenderer & TChildRenderer
+  }
 }

@@ -20,8 +20,11 @@ const createWindow = (): void => {
     width: 500,
     show: false,
     frame: false,
+    alwaysOnTop: true,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      contextIsolation: true,
+      nodeIntegration: false
     },
   });
 
@@ -34,16 +37,39 @@ const createWindow = (): void => {
     mainWindow.show()
   })
 
-  ipcMain.on('close-app', () => {
-    mainWindow.close()
-  })
-
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // Open the DevTools only in development
+  if (process.env.NODE_ENV === 'development') {
+    mainWindow.webContents.openDevTools();
+  }
 };
 
+// IPC handlers - fuera de createWindow para que estén disponibles globalmente
+ipcMain.on('close-app', () => {
+  if (mainWindow) {
+    mainWindow.close()
+  }
+})
+
+ipcMain.on('minimize-app', () => {
+  if (mainWindow) {
+    mainWindow.minimize()
+  }
+})
+
+ipcMain.on('maximize-app', () => {
+  if (mainWindow) {
+    if (mainWindow.isMaximized()) {
+      mainWindow.unmaximize()
+    } else {
+      mainWindow.maximize()
+    }
+  }
+})
+
+let childWindow: BrowserWindow | null = null;
+
 ipcMain.on('open-child-win', (ev, data) => {
-  const child_win = new BrowserWindow({
+  childWindow = new BrowserWindow({
     height: 300,
     width: 400,
     show: false,
@@ -54,24 +80,41 @@ ipcMain.on('open-child-win', (ev, data) => {
     },
   });
 
-  child_win.loadURL(CHILD_WINDOW_WEBPACK_ENTRY);
+  childWindow.loadURL(CHILD_WINDOW_WEBPACK_ENTRY);
 
   // document.onreadstatechange
-  child_win.on('ready-to-show', () => {
-    child_win.show()
+  childWindow.on('ready-to-show', () => {
+    childWindow?.show()
     mainWindow.hide()
     console.log("data", data);    
   })
 
-  child_win.on('show', () => {
-    child_win.webContents.send('tasks-data', data)
+  childWindow.on('show', () => {
+    childWindow?.webContents.send('tasks-data', data)
   })
 
-  child_win.on('closed', () => {
+  childWindow.on('closed', () => {
     console.log("child win I have closed");
+    childWindow = null;
     mainWindow.show()
   })
 
+})
+
+ipcMain.on('minimize-child-win', () => {
+  if (childWindow) {
+    childWindow.minimize()
+  }
+})
+
+ipcMain.on('maximize-child-win', () => {
+  if (childWindow) {
+    if (childWindow.isMaximized()) {
+      childWindow.unmaximize()
+    } else {
+      childWindow.maximize()
+    }
+  }
 })
 
 // This method will be called when Electron has finished

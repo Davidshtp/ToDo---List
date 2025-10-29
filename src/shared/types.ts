@@ -1,5 +1,4 @@
 export interface IManState extends IMainInternal {
-  
   set_state: (title : keyof IMainInternal , value : any ) => void;
 }
 

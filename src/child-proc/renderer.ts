@@ -26,7 +26,7 @@
  * ```
  */
 
-import '../index.css';
+import '../index.css';  // Updated path to look for CSS in src directory
 import './App'
 
 console.log(

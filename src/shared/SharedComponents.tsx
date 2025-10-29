@@ -1,16 +1,16 @@
 import React from "react";
-import { ArrowDown, ArrowUp, Pen, Plus, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Pen, X } from "lucide-react";
 import { TTask } from "./types";
 import { friendlyTime } from "./functions";
 
-export const TaskList = React.memo((props: {data: TTask, index: number, rmCb: Function, editCb: Function, totalItems: number, moveUpCb: Function, moveDwCb: Function}) => {
+export const TaskList = React.memo((props: { data: TTask, index: number, rmCb: Function, editCb: Function, totalItems: number, moveUpCb: Function, moveDwCb: Function }) => {
     const time = friendlyTime(props.data.duration)
     return (
         <div className="flex flex-row justify-between items-start pb-2">
             <div className="flex flex-col flex-1">
                 <div className="font-semibold">{props.data.title}</div>
                 <div className="opacity-70">
-                    {time.hour}hrs {time.min}mins {time.sec}secs
+                    {time.hour}h {time.min}m {time.sec}s
                 </div>
             </div>
             <div className="space-x-[3px] flex">
